@@ -43,33 +43,34 @@ pub unsafe fn atomic_emulation(pc: usize, frame: &mut [usize; PLATFORM_REGISTER_
         *(pc as *const u32)
     };
 
-    if !is_atomic_instruction(insn) {
-        return false;
-    }
+    //not needed since checked in rt
+    //if !is_atomic_instruction(insn) {
+    //    return false;
+    //}
 
     let reg_mask = 0b11111;
     // destination register
-    let rd = (insn >> 7) & reg_mask;
+    let rd = ((insn >> 7) & reg_mask) as usize;
     // source 1 register
-    let rs1 = (insn >> 15) & reg_mask;
+    let rs1 = ((insn >> 15) & reg_mask) as usize;
     // source 2 register
-    let rs2 = (insn >> 20) & reg_mask;
+    let rs2 = ((insn >> 20) & reg_mask) as usize;
 
     match insn >> 27 {
         0b00010 => {
             /* LR */
-            S_LR_ADDR = frame[rs1 as usize];
+            S_LR_ADDR = frame[rs1];
             let tmp: usize = *(S_LR_ADDR as *const _);
-            frame[rd as usize] = tmp;
+            frame[rd] = tmp;
         }
         0b00011 => {
             /* SC */
-            let tmp: usize = frame[rs1 as usize];
+            let tmp: usize = frame[rs1];
             if tmp != S_LR_ADDR {
-                frame[rd as usize] = 1;
+                frame[rd] = 1;
             } else {
-                *(S_LR_ADDR as *mut _) = frame[rs2 as usize];
-                frame[rd as usize] = 0;
+                *(S_LR_ADDR as *mut _) = frame[rs2];
+                frame[rd] = 0;
                 S_LR_ADDR = 0;
             }
         }
