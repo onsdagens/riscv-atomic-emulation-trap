@@ -15,22 +15,20 @@ macro_rules! amo {
 
 /// is_atomic_instruction
 /// 
-/// Take the program counter address and returns whether the instruction at that address is an atomic one
-pub unsafe fn is_atomic_instruction(pc: usize) -> bool {
-    (*(pc as *const usize) & 0b1111111) == 0b0101111
+/// Take the instruction and returns whether the instruction at that address is an atomic one
+pub unsafe fn is_atomic_instruction(insn: usize) -> bool {
+    (insn & 0b1111111) == 0b0101111
 }
 
 /// atomic_emulation
 /// 
 /// Takes the exception program counter and an array of registers at point of exception with [`PLATFORM_REGISTER_LEN`] length.
-pub unsafe fn atomic_emulation(pc: usize, frame: &mut [usize; PLATFORM_REGISTER_LEN]) -> bool {
+pub unsafe fn atomic_emulation(insn: usize, frame: &mut [usize; PLATFORM_REGISTER_LEN]) -> bool {
     static mut S_LR_ADDR: usize = 0;
 
-    if !is_atomic_instruction(pc) {
+    if !is_atomic_instruction(insn) {
         return false;
     }
-
-    let insn: usize = *(pc as *const _);
 
     let reg_mask = 0b11111;
     // destination register
