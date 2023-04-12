@@ -17,7 +17,8 @@ macro_rules! amo {
 /// 
 /// Take the instruction and returns whether the instruction at that address is an atomic one
 pub unsafe fn is_atomic_instruction(insn: u32) -> bool {
-    (insn & 0b1111111) == 0b0101111
+    //(insn & 0b1111111) == 0b0101111
+    true
 }
 
 /// atomic_emulation
