@@ -17,8 +17,7 @@ macro_rules! amo {
 /// 
 /// Take the instruction and returns whether the instruction at that address is an atomic one
 pub unsafe fn is_atomic_instruction(insn: u32) -> bool {
-    //(insn & 0b1111111) == 0b0101111
-    true
+    (insn & 0b1111111) == 0b0101111
 }
 
 /// atomic_emulation
@@ -43,11 +42,9 @@ pub unsafe fn atomic_emulation(pc: usize, frame: &mut [usize; PLATFORM_REGISTER_
     } else {
         *(pc as *const u32)
     };
-
-    //not needed since checked in rt
-    //if !is_atomic_instruction(insn) {
-    //    return false;
-    //}
+    if !is_atomic_instruction(insn) {
+        return false;
+    }
 
     let reg_mask = 0b11111;
     // destination register
